@@ -40,7 +40,7 @@ Adam Optimizer (β₁ \= 0.9,  β₂ \= 0.98,  ε \= 10⁻⁹ )
 ## Learning Rate
 
 The Transformers has a custom learning rate which is defined as:   
-![Learning Rate Schedule](https://latex.codecogs.com/png.latex?\Large%20lrate%20=%20d_{model}^{-0.5}\cdot\min(step^{-0.5},\ step\cdot warmup\_steps^{-1.5}))
+![Learning Rate Schedule](https://latex.codecogs.com/png.latex?%5CLarge%20lrate%20%3D%20d_%7Bmodel%7D%5E%7B-0.5%7D%5Ccdot%5Cmin%28step%5E%7B-0.5%7D%2C%20step%5Ccdot%20warmup_%7Bsteps%7D%5E%7B-1.5%7D%29)
 Learning rate increases linearly for the first 4000 steps (warmup phase). After warmup, it decays proportionally to the inverse square root of the step number. 
 
 # Limitations
