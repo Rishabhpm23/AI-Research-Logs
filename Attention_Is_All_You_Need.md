@@ -40,7 +40,13 @@ Adam Optimizer (β₁ \= 0.9,  β₂ \= 0.98,  ε \= 10⁻⁹ )
 ## Learning Rate
 
 The Transformers has a custom learning rate which is defined as:   
-$\text{lrate} = d_{\text{model}}^{-0.5} \cdot \min(\text{step}^{-0.5},\ \text{step} \cdot \text{warmup\_steps}^{-1.5})$
+\[
+\text{lrate} = d_{\text{model}}^{-0.5} \cdot 
+\min \left( 
+\text{step}^{-0.5},\ 
+\text{step} \cdot \text{warmup\_steps}^{-1.5} 
+\right)
+\]
 Learning rate increases linearly for the first 4000 steps (warmup phase). After warmup, it decays proportionally to the inverse square root of the step number. 
 
 # Limitations
