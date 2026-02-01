@@ -14,6 +14,22 @@ RNNs, Long Short Term Memory (LSTMs) and gated RNNs, were the dominant approache
 The “Transformers” allows more parallelization which reached SOTA in translation in those times. It allowed all tokens in a sequence to be processed parallely, unlike RNNs. This resulted in a significant decrease in the training time and helped capture long-range dependencies effectively. 
 
 # Core Explanation 
+“Attention” in “Attention is All You Need” refers to the model’s ability to dynamically emphasise different parts of the input text, and focus on the most relevant parts based on the task. The two main concepts introduced in the paper are Scaled Dot-Product Attention and Multi-Head Attention.
+
+## Scaled Dot-Product Attention
+
+This type of attention mechanism involves calculating the attention weights using scaled dot-product. The dot-product measures the similarity between the vectors, and scaling prevents the attention weights from becoming very large. 
+
+This function takes three matrices as input: 
+
+- The query matrix (Q):  Represents the current token asking, “what should i pay attention to ?”.  
+- The key matrix (K): represents each tokens label, acting as “what information do I offer that might be relevant ?”.  
+- The value matrix (V): Represents the actual content of the word that is weighted by the attention scores.
+
+## Multi-Head Attention
+
+This is a type of attention mechanism that uses multiple scaled dot-product attentions in parallel. Every dot-product attention head has its own set of Q, K, V matrices. This enables the model to attend to different parts of the input data in different ways. The output of each scaled dot-product is concatenated and that becomes the output of the multi-head attention function.
+
 
 # Experimental Setup 
 
@@ -47,4 +63,11 @@ Learning rate increases linearly for the first 4000 steps (warmup phase). After 
 
 # Limitations
 
+- **Large data requirements** (\~4.5M sentence pairs for English-German and \~36M for English-French)  
+- **High computational cost** (Base model: 12 hours on 8 NVIDIA P100 GPUs , Big model: 3.5 days on 8 P100 GPUs)  
+- **Fixed context window** (The model processes sequences of fixed maximum length and cannot easily handle documents longer than the maximum context window without truncation)
+
 # Research Questions I would like to explore further 
+
+- What architectural modifications are possible that could reduce the training time without compromising performance ?  
+- How effective are data augmentation techniques for Transformers in low-resource settings?
