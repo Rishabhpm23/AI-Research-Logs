@@ -2,6 +2,9 @@
 
 Link to Original Paper \- [https://arxiv.org/abs/2201.11903](https://arxiv.org/abs/2201.11903)
 
+<img width="724" height="352" alt="image" src="https://github.com/user-attachments/assets/1157c05f-0300-4f7a-8ecc-2cfbd0dbb80d" />
+
+
 # The Problem Definition: 
 
 Large language models can perform many tasks via few-shot prompting, but they often struggle with complex reasoning tasks such as arithmetic, commonsense reasoning, and symbolic reasoning. Standard prompting methods directly map input to output without explicitly modeling intermediate reasoning steps.
