@@ -2,6 +2,8 @@
 
 Link to the Original Paper \- [https://arxiv.org/abs/2506.10943](https://arxiv.org/abs/2506.10943)
 
+<img width="830" height="337" alt="image" src="https://github.com/user-attachments/assets/f0f10e52-a580-4a2b-bac9-2301ad42f6dc" />
+
 # The Problem Definition: 
 
 Large language models (LLMs) lack a mechanism to adapt their weights in response to new tasks, knowledge or examples. Self-Adapting LLMs (SEAL) enables LLMs to self-adapt by generating their own finetuning data & update directives.
@@ -15,6 +17,7 @@ If given a new task, LLMs consume and learn from task data as it is via finetuni
 SEAL allows LLMs to generate their own training data & finetuning directives in response to new inputs. This paper introduces a reinforcement learning algorithm that trains LLMs to generate “self-edits”. Hence known as Self-Adapting LLM (SEAL).
 
 # Core Explanation:
+<img width="350" height="237" alt="image" src="https://github.com/user-attachments/assets/69b81d3c-75e4-4516-aa58-144a5939949d" />
 
 The SEAL framework works in two main steps:
 
