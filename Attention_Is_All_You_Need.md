@@ -1,4 +1,7 @@
 # Attention is All You Need 
+Link to Original Paper - https://arxiv.org/abs/1706.03762
+
+<img width="460" height="651" alt="image" src="https://github.com/user-attachments/assets/26f96376-5a9d-442d-b35c-a4c5bd7eb8a6" />
 
 
 # The Problem Definition:
@@ -15,6 +18,9 @@ The “Transformers” allows more parallelization which reached SOTA in transla
 
 # Core Explanation 
 “Attention” in “Attention is All You Need” refers to the model’s ability to dynamically emphasise different parts of the input text, and focus on the most relevant parts based on the task. The two main concepts introduced in the paper are Scaled Dot-Product Attention and Multi-Head Attention.
+
+<img width="597" height="321" alt="image" src="https://github.com/user-attachments/assets/f7f2d0f9-37f9-4e3f-a2c2-9cfcc4bee15c" />
+
 
 ## Scaled Dot-Product Attention
 
@@ -57,7 +63,8 @@ Adam Optimizer (β₁ \= 0.9,  β₂ \= 0.98,  ε \= 10⁻⁹ )
 
 The Transformers has a custom learning rate which is defined as:   
 
-![Learning Rate Schedule](https://latex.codecogs.com/png.latex?%5CLarge%20lrate%20%3D%20d_%7Bmodel%7D%5E%7B-0.5%7D%5Ccdot%5Cmin%28step%5E%7B-0.5%7D%2C%20step%5Ccdot%20warmup_%7Bsteps%7D%5E%7B-1.5%7D%29)
+<img width="541" height="38" alt="image" src="https://github.com/user-attachments/assets/190a5aa0-9c2f-4ed8-938a-04fd9f72fd81" />
+
 
 Learning rate increases linearly for the first 4000 steps (warmup phase). After warmup, it decays proportionally to the inverse square root of the step number. 
 
