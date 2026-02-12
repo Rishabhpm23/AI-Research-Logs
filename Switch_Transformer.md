@@ -1,8 +1,11 @@
 # Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity
+Link to the paper - https://arxiv.org/abs/2101.03961
 
 ## **The Problem Definition**
 
 The main motivation behind the Switch Transformer paper was to scale language models to extremely large sizes without proportionally increasing computational cost. Traditional scaling methods improve performance by increasing model parameters and training data, but they also drastically increase training time, memory usage, and infrastructure requirements.
+
+<img width="753" height="366" alt="image" src="https://github.com/user-attachments/assets/d250dff2-8fdc-4521-90f8-3f938f93c213" />
 
 The challenge was clear:  
 **Can we build much larger models while keeping the computation per example manageable?**
@@ -38,6 +41,8 @@ The “Switch” mechanism simplifies previous MoE models by routing each token 
 ## **Core Explanation**
 
 The main idea behind the Switch Transformer is actually quite intuitive.
+<img width="795" height="315" alt="image" src="https://github.com/user-attachments/assets/4d1297ba-2c8f-4bb6-9243-c35ecb3f2dee" />
+
 
 In a standard Transformer, every token passes through the same feed-forward network (FFN) inside each layer. This means all the parameters in that layer are used for every token. As the model grows larger, this becomes computationally expensive because every part of the model is active all the time.
 
@@ -58,6 +63,7 @@ This “top-1 routing” is what makes it simple and stable compared to older Mo
 ## **Load Balancing Loss (Short Explanation)**
 
 One practical issue with the older setup is that the router might start favoring certain experts too much. For example, during training some experts may receive most of the tokens and other experts may barely get used.
+<img width="233" height="65" alt="image" src="https://github.com/user-attachments/assets/23b6bdc0-ab82-4f5c-9196-0d79a5da3d05" />
 
 This creates two problems:
 
