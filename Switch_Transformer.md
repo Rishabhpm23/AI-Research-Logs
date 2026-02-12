@@ -60,9 +60,10 @@ Here’s what happens during training:
 
 This “top-1 routing” is what makes it simple and stable compared to older MoE models.
 
-## **Load Balancing Loss (Short Explanation)**
+## **Load Balancing Loss**
 
 One practical issue with the older setup is that the router might start favoring certain experts too much. For example, during training some experts may receive most of the tokens and other experts may barely get used.
+
 <img width="233" height="65" alt="image" src="https://github.com/user-attachments/assets/23b6bdc0-ab82-4f5c-9196-0d79a5da3d05" />
 
 This creates two problems:
