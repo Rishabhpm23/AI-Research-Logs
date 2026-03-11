@@ -6,6 +6,9 @@
 
 ---
 
+<img width="1094" height="613" alt="image" src="https://github.com/user-attachments/assets/c54d4df8-cddc-4e59-ae0a-aacc94612038" />
+
+
 ## 1. Problem Definition
 
 Making language models bigger does **not** make them better at following user intent. Scaling just makes models better at predicting the next token — which is not the same thing as doing what the user actually wants. Basically, these models are not aligned with their users.
