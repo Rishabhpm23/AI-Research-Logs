@@ -11,88 +11,72 @@
 
 ## 1. Problem Definition
 
-We want AI assistants that are helpful, honest, **and** harmless — even as they get more capable. The challenge is: how do you train a model to be harmless _without_ needing thousands of humans to label every single harmful output?
+How do you train a harmless AI assistant *without* any human labels identifying harmful outputs?
 
-That's the core question this paper answers.
+That's the exact problem this paper is going after. They want a model that's genuinely harmless — not evasive, not refusing everything — but actually harmless in a thoughtful way. And they want to do it without paying thousands of people to label what's harmful.
 
 ---
 
 ## 2. Why Prior Methods Fail
 
-Before this paper, the standard approach was **RLHF** (Reinforcement Learning from Human Feedback) — the same pipeline used to build InstructGPT. Here's how it works at a high level (from my reading notes):
+Standard RLHF for harmlessness has a core bottleneck: you need human labelers to read outputs and say "this one is more harmful than that one" — tens of thousands of times. That's expensive, slow, and the labels themselves are kind of a black box. Nobody can read 50k comparisons and understand what the model actually learned from them.
 
-> **Step 1 — SFT:** A prompt is sampled → a human labeler demonstrates the desired output → this data fine-tunes GPT-3 with supervised learning.  
-> **Step 2 — Reward Model:** A prompt + several model outputs are sampled → a labeler ranks them best to worst → this trains a reward model.  
-> **Step 3 — RL:** A new prompt is sampled → the policy generates an output → the reward model scores it → the score updates the policy via PPO. Loop.
-
-The problem with standard RLHF for harmlessness:
-
-- **It's expensive.** You need tens of thousands of human labels _just for harmlessness_.
-- **It makes models evasive.** When harmlessness is rewarded by crowd workers, models learn that "I can't answer that" is a safe bet — which tanks helpfulness.
-- **The objectives are opaque.** No one can read 50,000 preference labels and understand what the model actually learned.
-
-There's also a real tension: training harder for harmlessness tends to make the model _less_ helpful, and vice versa.
+Worse, models trained this way tend to become **evasive**. The easiest way to score "harmless" with a crowd worker is to just refuse to answer. So the model learns to say "I can't help with that" — which is technically harmless but completely useless and not actually aligned.
 
 ---
 
 ## 3. Key Innovation
 
-> Train a model to be harmless using **only a short list of written principles** — no human feedback labels for harmlessness at all. Let the AI critique and revise its own outputs (supervised stage), then use AI-generated preference labels to do RL (RLAIF stage).
+> Use a short list of written principles (a "constitution") as the *only* human oversight. Let the model critique and revise its own responses in a supervised phase, then replace human harmlessness labels with AI-generated ones in the RL phase. This is called **RLAIF — RL from AI Feedback**.
 
-That's it. The model does the heavy lifting. Humans just write the rules.
+No human labels for harmlessness. Just rules, written in plain language.
 
 ---
 
 ## 4. Core Method Explanation
 
-The process has two stages:
+The training process has two stages:
 
-### Stage 1 — Supervised Learning (SL-CAI): Critique → Revise → Fine-tune
+### Supervised Learning Stage: Critique → Revision → Supervised Learning
 
-Start with a helpful-only RLHF model. Feed it a harmful prompt. It gives a bad answer. Then:
+- First, responses are generated to harmfulness prompts using a **helpful-only** AI assistant. These responses are quite toxic and harmful — that's intentional.
+- Then, the model critiques its own response according to the principles in the constitution (e.g., *"Identify specific ways this response is harmful, unethical, or illegal"*).
+- It then revises the original response based on that critique.
+- This **critique → revision** cycle repeats multiple times, with principles drawn **randomly** from the constitution each time — so you get diversity.
+- Finally, the original model is fine-tuned with supervised learning on the final revised responses.
 
-1. Ask the model to **critique** its own response using a principle from the "constitution" (e.g., _"Identify ways your response is harmful, toxic, or illegal"_).
-2. Ask the model to **revise** the response based on the critique.
-3. Repeat this critique-revision loop several times with different principles.
-4. Fine-tune a pretrained LM on the final revised responses.
+The whole point of this stage is to get the model "on distribution" before RL kicks in — it's much easier to do RL when the model is already producing mostly reasonable outputs.
 
-This gets the model "on-distribution" before RL starts — it reduces the need for random exploration.
+### Reinforcement Learning Stage: AI Comparison Evaluations → Preference Model → Reinforcement Learning
 
-### Stage 2 — RL from AI Feedback (RLAIF): AI Labels → Preference Model → PPO
-
-1. Take the SL-CAI model and generate **pairs** of responses to harmful prompts.
-2. Ask a separate feedback model to pick the _less harmful_ response using a constitutional principle — formatted as a multiple choice question.
-3. Use these AI-generated labels to train a **preference model (PM)**.
-4. Fine-tune the SL-CAI model using PPO against this PM.
-
-One clever trick: they use **Chain-of-Thought prompting** on the feedback model. Asking it to _reason step-by-step_ before choosing significantly improves label quality. They also clamp CoT probabilities to the 40–60% range to prevent overconfident labels from destabilizing training.
+- This stage **mimics RLHF**, but human preferences for harmlessness are replaced with **AI Feedback (RLAIF)**.
+- The model trained in the supervised stage is used to generate **pairs of responses** to each prompt in a dataset of harmful prompts.
+- Each prompt + pair is formulated into a **multiple choice question**: *"Which response is better according to this constitutional principle?"* — and the AI answers it.
+- This produces an **AI-generated preference dataset for harmlessness**, which is then mixed with the human feedback helpfulness dataset.
+- A **preference model (PM)** is trained on this comparison data — the PM can now assign a score to any given sample.
+- Finally, the model from Stage 1 is fine-tuned via **PPO (RL) against the PM**, resulting in a policy trained by RLAIF.
 
 ---
 
 ## 5. Experimental Setup
 
-- **Models:** 52B parameter LMs (and ablations across sizes from ~1B to 52B)
-- **Data:**
-  - 42,496 human-written + 140,335 model-generated red team prompts for harmlessness
-  - 135,296 human helpfulness prompts (human labels kept for helpfulness)
-  - 16 different constitutional principles, randomly sampled at each revision step
-- **Evaluation:** Elo scores computed from crowdworker comparison tests (A/B testing model responses)
-- **Baselines:** Helpful-only RLHF, HH (helpful + harmless) RLHF, SL-CAI, RL-CAI, RL-CAI with CoT
-- **Key result:** RL-CAI with CoT achieves a **Pareto improvement** over standard RLHF — it's both more helpful _and_ more harmless at the same time. The evasiveness problem largely disappears.
-- **Absolute harmfulness score:** Measured on a 0–4 scale using a fine-tuned scoring model; RL-CAI becomes progressively less harmful during training while helpful RLHF gets _worse_.
+- **Models:** Series of LMs up to 52B parameters; tested at multiple scales
+- **Red team prompts:** 42,496 human-written + 140,335 model-generated = ~182,831 total
+- **Helpfulness prompts:** 135,296 human-written (human labels kept here)
+- **Constitution:** 16 different principles, randomly sampled at each revision step
+- **Evaluation:** Elo scores from crowdworker A/B comparison tests; absolute harmfulness score on a 0–4 scale
+- **Key result:** RL-CAI achieves a **Pareto improvement** — more harmless *and* more helpful than standard HH RLHF at the same time. The evasiveness problem is largely solved.
 
 ---
 
 ## 6. Limitations
 
-Honestly, a few things I think deserve more scrutiny:
-
-- **The constitution is hand-crafted and ad hoc.** The 16 principles were selected informally. Who decides what goes in? Different stakeholders might write very different constitutions, and the paper doesn't study that variance much.
-- **Self-referential feedback loop.** The same family of models writes the principles, generates the responses, and evaluates them. It's not obvious how well this generalizes or catches _subtle_ harms the model was never trained to see.
-- **Goodharting is real.** They explicitly note that over-trained RL-CAI models start adding boilerplate like _"you are valid, valued, and cared for"_ to almost every response — a clear sign the model is gaming the reward.
-- **Helpfulness labels still rely on humans.** The paper eliminates human labels for harmlessness, but helpfulness supervision is still fully human-dependent. It's a partial solution.
-- **Evaluation is crowdworker-dependent.** Elo scores are based on crowd preferences, and the paper itself notes that worker instructions changed between this paper and prior work — which affected scores. That's a shaky foundation.
+- The constitution is ad hoc — 16 principles chosen informally. Different stakeholders would write very different rules, and the paper doesn't test sensitivity to that.
+- It's a self-referential loop: the same model family generates responses, critiques them, and evaluates them. Subtle harms the model can't perceive in itself won't get caught.
+- **Goodharting is real** — over-trained RL-CAI models start adding boilerplate like "you are valid, valued, and cared for" to nearly every response. The reward is being gamed.
+- Human labels for helpfulness are still required. This is a partial step toward self-supervision, not the full thing.
+- Elo scores depend heavily on crowdworker instructions, which changed between this paper and prior work, making direct comparisons tricky.
 
 ---
 
-_Summary written as part of the 45-Day Hard research plan._
+*Summary written as part of the 45-Day Hard research plan.*
