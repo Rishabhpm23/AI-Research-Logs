@@ -6,6 +6,9 @@
 
 ---
 
+<img width="1426" height="765" alt="image" src="https://github.com/user-attachments/assets/a4fec8e7-b15e-4b13-87a4-c6e2ddc28f7c" />
+
+
 ## 1. Problem Definition
 
 We want AI assistants that are helpful, honest, **and** harmless — even as they get more capable. The challenge is: how do you train a model to be harmless _without_ needing thousands of humans to label every single harmful output?
