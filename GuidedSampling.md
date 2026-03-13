@@ -151,4 +151,4 @@ The paper only uses GuidedSampling for supervised fine-tuning. But the diversity
 
 ---
 
-*Summary written as part of the 45-Day Hard research plan.*
+*Summary written as part of the 45-Day Research Sprint.*
