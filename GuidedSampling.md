@@ -40,7 +40,7 @@ This separation, explore once, generate many, is the whole idea. It's called **G
 
 GuidedSampling has two explicit phases:
 
-### Phase 1 — Exploration: Generate Diverse Concepts
+### Phase 1 - Exploration: Generate Diverse Concepts
 
 Given a question `x`, ask the model to generate concept `c₁`, the most relevant theorem or approach for solving it. Then ask again for a *different* concept `c₂`, conditioning on `c₁` already existing so the model is pushed to explore elsewhere. Repeat for `K` concepts:
 
